@@ -1,6 +1,6 @@
-# myapp
+# BANK SAMPAH KEMUNING
 
-A new Flutter project.
+Aplikasi pengelolaan bank sampah kemuning menggunakan Flutter.
 
 ## Getting Started
 
