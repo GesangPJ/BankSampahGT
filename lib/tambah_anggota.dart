@@ -8,6 +8,12 @@ class TambahAnggota extends StatefulWidget {
 }
 
 class _TambahAnggotaState extends State<TambahAnggota> {
+  final _namaController = TextEditingController();
+  final _alamatController = TextEditingController();
+  final _noTeleponController = TextEditingController();
+  
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
