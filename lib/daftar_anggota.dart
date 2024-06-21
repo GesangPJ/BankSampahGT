@@ -34,8 +34,9 @@ class _DaftarAnggotaState extends State<DaftarAnggota> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Edit or Delete'),
-          content: const Text('Do you want to edit or delete this member?'),
+          title: const Text('Edit atau Hapus?'),
+          content: const Text(
+              'Apakah anda ingin edit atau menghapus data anggota ini?'),
           actions: [
             TextButton(
               onPressed: () {
@@ -60,7 +61,7 @@ class _DaftarAnggotaState extends State<DaftarAnggota> {
                   const SnackBar(content: Text('Anggota berhasil dihapus.')),
                 );
               },
-              child: const Text('Delete'),
+              child: const Text('Hapus'),
             ),
           ],
         );
@@ -80,9 +81,9 @@ class _DaftarAnggotaState extends State<DaftarAnggota> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Error loading data'));
+            return const Center(child: Text('Error memuat data'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No members found'));
+            return const Center(child: Text('Tidak ditemukan data anggota'));
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.length,
