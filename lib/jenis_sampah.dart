@@ -161,6 +161,7 @@ class _DaftarJenisSampahState extends State<DaftarJenisSampah> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddJenisSampah,
+        backgroundColor: Colors.blue,
         child: const Icon(Icons.add),
       ),
     );
