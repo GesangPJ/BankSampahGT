@@ -52,7 +52,7 @@ class _TambahAnggotaState extends State<TambahAnggota> {
           final id = widget.anggota!['id'];
           await DatabaseHelper.instance.updateAnggota(id, row);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Anggota berhasil diperbarui.')),
+            const SnackBar(content: Text('Data Anggota berhasil diperbarui.')),
           );
         } else {
           final id = await DatabaseHelper.instance.insertAnggota(row);
@@ -79,8 +79,8 @@ class _TambahAnggotaState extends State<TambahAnggota> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Form Incomplete'),
-            content: const Text('Please fill all fields'),
+            title: const Text('Form Tidak Lengkap!'),
+            content: const Text('Tolong isi semua data yang diminta'),
             actions: [
               TextButton(
                 child: const Text('OK'),
