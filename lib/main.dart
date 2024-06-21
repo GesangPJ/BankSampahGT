@@ -1,6 +1,8 @@
 import 'package:BankSampahKemuning/tambah_anggota.dart';
 import 'package:flutter/material.dart';
 import 'package:BankSampahKemuning/daftar_anggota.dart';
+import 'package:BankSampahKemuning/jenis_sampah.dart';
+//import 'package:BankSampahKemuning/tambah_jenis_sampah.dart';
 
 void main() {
   runApp(const BankSampahKemuning());
@@ -98,6 +100,10 @@ class _MyHomePageState extends State<MyHomePage> {
             title: const Text('Jenis Sampah'),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const DaftarJenisSampah()));
             },
           ),
           ListTile(
