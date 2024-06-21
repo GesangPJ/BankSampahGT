@@ -1,21 +1,21 @@
-import 'package:BankSampahKemuning/tambah_anggota.dart';
+import 'package:BankSampahGT/tambah_anggota.dart';
 import 'package:flutter/material.dart';
-import 'package:BankSampahKemuning/daftar_anggota.dart';
-import 'package:BankSampahKemuning/jenis_sampah.dart';
-//import 'package:BankSampahKemuning/tambah_jenis_sampah.dart';
+import 'package:BankSampahGT/daftar_anggota.dart';
+import 'package:BankSampahGT/jenis_sampah.dart';
+//import 'package:BankSampahGT/tambah_jenis_sampah.dart';
 
 void main() {
-  runApp(const BankSampahKemuning());
+  runApp(const BankSampahGT());
 }
 
-class BankSampahKemuning extends StatelessWidget {
-  const BankSampahKemuning({super.key});
+class BankSampahGT extends StatelessWidget {
+  const BankSampahGT({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bank Sampah Kemuning',
+      title: 'Bank Sampah GT',
       theme: ThemeData(
         // This is the theme of your application.
         //
