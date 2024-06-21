@@ -102,6 +102,10 @@ class _TambahJenisSampahState extends State<TambahJenisSampah> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _addJenisSampah,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
               child: Text(widget.jenisSampah == null
                   ? 'Simpan Jenis Sampah'
                   : 'Simpan Perubahan'),
