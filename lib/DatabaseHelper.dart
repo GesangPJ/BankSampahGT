@@ -26,39 +26,37 @@ class DatabaseHelper {
   static const columnTanggalTransaksi = 'tanggal_transaksi';
   static const columnJumlahTransaksi = 'jumlah_transaksi';
 
-DatabaseHelper._privateConstructor();
-static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+  DatabaseHelper._privateConstructor();
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
-static Database? _database;
-Future<Database> get database async {
-  if (_database != null) return _database!;
-  _database = await _initDatabase();
-  return _database!;
-}
+  static Database? _database;
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
+  }
 
-_initDatabase() async {
+  _initDatabase() async {
+    String path = join(await getDatabasesPath(), _databaseName);
+    return await openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: _onCreate,
+    );
+  }
 
-  String path = join(await getDatabasesPath(), _databaseName);
-  return await openDatabase(
-    path,
-    version: _databaseVersion,
-    onCreate: _onCreate,
-  );
-}
-
-void _onCreate(Database db, int version) async {
-  // Buat tabel anggota
-  await db.execute('''
+  void _onCreate(Database db, int version) async {
+    await db.execute('''
     CREATE TABLE $tableAnggota (
-      $columnIdAnggota INTEGER PRIMARY KEY AUTOINCREMENT,
-      $columnNama TEXT NOT NULL,
+      $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
+      $columnNama TEXT NOT NULL UNIQUE,
       $columnAlamat TEXT NOT NULL,
       $columnNoTelepon TEXT NOT NULL
     )
   ''');
 
-  // Buat tabel jenis_sampah
-  await db.execute('''
+    // Buat tabel jenis_sampah
+    await db.execute('''
     CREATE TABLE $tableJenisSampah (
       $columnIdJenisSampah INTEGER PRIMARY KEY AUTOINCREMENT,
       $columnNamaJenisSampah TEXT NOT NULL,
@@ -66,8 +64,8 @@ void _onCreate(Database db, int version) async {
     )
   ''');
 
-  // Buat tabel transaksi_sampah
-  await db.execute('''
+    // Buat tabel transaksi_sampah
+    await db.execute('''
     CREATE TABLE $tableTransaksi (
       $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
       $columnIdAnggota INTEGER NOT NULL,
@@ -78,6 +76,31 @@ void _onCreate(Database db, int version) async {
       FOREIGN KEY ($columnIdJenisSampahTransaksi) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
     )
   ''');
-}
+  }
 
+  //Simpan Data Anggota
+  Future<int> insertAnggota(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    return await db.insert(tableAnggota, row);
+  }
+
+  //Ambil Data Anggota
+  Future<List<Map<String, dynamic>>> getAllAnggota() async {
+    Database db = await instance.database;
+    return await db.query(tableAnggota);
+  }
+
+  // Hapus Data Anggota
+  Future<int> deleteAnggota(int id) async {
+    Database db = await instance.database;
+    return await db
+        .delete(tableAnggota, where: '$columnId = ?', whereArgs: [id]);
+  }
+
+//Update Data Anggota
+  Future<int> updateAnggota(int id, Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    return await db
+        .update(tableAnggota, row, where: '$columnId = ?', whereArgs: [id]);
+  }
 }
