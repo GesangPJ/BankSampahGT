@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TambahAnggota extends StatefulWidget {
-  const TambahAnggota({Key? key}) : super(key: key);
+  const TambahAnggota({super.key});
 
   @override
   State<TambahAnggota> createState() => _TambahAnggotaState();
@@ -18,24 +18,24 @@ class _TambahAnggotaState extends State<TambahAnggota> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Anggota'),
+        title: const Text('Tambah Anggota'),
       ),
       body: Center(
         child: Column(
           children: [
-TextField(
+const TextField(
               decoration: InputDecoration(
                 labelText: 'Nama Anggota',
                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
               ),
             ),
-            TextField(
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Alamat Anggota',
                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
               ),
             ),
-            TextField(
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'No. Telepon Anggota',
                 contentPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -47,11 +47,11 @@ ElevatedButton(
               onPressed: () {
                 // Save member information to database
               },
-              child: const Text('Tambah Anggota'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,
               ),
+              child: const Text('Tambah Anggota'),
             ),
 
           ],
