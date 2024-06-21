@@ -7,24 +7,47 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:BankSampahGT/daftar_anggota.dart';
+import 'package:BankSampahGT/jenis_sampah.dart';
+import 'package:BankSampahGT/tambah_anggota.dart';
 import 'package:BankSampahGT/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('Test Drawer Navigation', (WidgetTester tester) async {
     await tester.pumpWidget(const BankSampahGT());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Open the drawer
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle(); // Wait for drawer to fully open
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Test each ListTile in the drawer
+    await _testDrawerMenuItem(tester, Icons.dashboard, 'Dashboard');
+    await _testDrawerMenuItem(tester, Icons.payment, 'Transaksi Sampah');
+    await _testDrawerMenuItem(tester, Icons.category, 'Jenis Sampah',
+        navigateTo: const DaftarJenisSampah());
+    await _testDrawerMenuItem(tester, Icons.print, 'Print / Ekspor Data');
+    await _testDrawerMenuItem(tester, Icons.person, 'Anggota',
+        navigateTo: const DaftarAnggota());
+    await _testDrawerMenuItem(tester, Icons.person_add, 'Tambah Anggota',
+        navigateTo: const TambahAnggota());
   });
+}
+
+Future<void> _testDrawerMenuItem(
+    WidgetTester tester, IconData icon, String text,
+    {Widget? navigateTo}) async {
+  // Tap on the ListTile with the given text and icon
+  await tester.tap(find.widgetWithIcon(ListTile, icon));
+  await tester.pumpAndSettle(); // Wait for navigation to complete
+
+  // Verify the drawer is closed
+  expect(find.text('Menu'), findsNothing);
+
+  // Verify text is present on the screen
+  expect(find.text(text), findsOneWidget);
+
+  // If a screen to navigate to is provided, verify it's on the screen
+  if (navigateTo != null) {
+    expect(find.byWidget(navigateTo), findsOneWidget);
+  }
 }
