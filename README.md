@@ -2,6 +2,13 @@
 
 Aplikasi pengelolaan bank sampah kemuning menggunakan Flutter.
 
+Fitur :
+
+- Tambah / Edit / Hapus Jenis Sampah.
+- Tambah / Edit / Hapus Harga Jenis Sampah.
+- Daftar Anggota.
+- Transaksi Bank Sampah.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
