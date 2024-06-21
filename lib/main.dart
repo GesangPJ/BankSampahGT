@@ -1,5 +1,6 @@
 import 'package:BankSampahKemuning/tambah_anggota.dart';
 import 'package:flutter/material.dart';
+import 'package:BankSampahKemuning/daftar_anggota.dart';
 
 void main() {
   runApp(const BankSampahKemuning());
@@ -110,7 +111,11 @@ class _MyHomePageState extends State<MyHomePage> {
             leading: const Icon(Icons.person),
             title: const Text('Anggota'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pop(context); // Close the drawer if you have one
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DaftarAnggota()),
+              );
             },
           ),
           ListTile(
