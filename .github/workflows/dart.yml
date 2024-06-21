@@ -11,18 +11,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set up Dart SDK
-        uses: dart-lang/setup-dart@v1
+      # Set up Flutter using subosito/flutter-action
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          dart-sdk: stable
+          channel: stable
+          flutter-version-file: pubspec.yaml
 
-      - name: Install dependencies
+      # Continue with Flutter commands
+      - run: flutter --version
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+      # If Flutter fails, fallback to Dart SDK
+      - name: Install dependencies (Dart SDK)
+        if: ${{ failure() }}
         run: dart pub get
 
-      - name: Analyze project source
+      - name: Analyze project source (Dart SDK)
+        if: ${{ failure() }}
         run: dart analyze
 
-      - name: Run tests
+      - name: Run Dart tests
+        if: ${{ failure() }}
         run: dart test
