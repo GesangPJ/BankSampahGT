@@ -1,6 +1,6 @@
 {
-    "name": "myapp",
-    "short_name": "myapp",
+    "name": "Bank Sampah GT",
+    "short_name": "BankSampahGT",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
