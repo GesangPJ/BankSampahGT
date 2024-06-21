@@ -1,13 +1,12 @@
-
 import 'package:BankSampahKemuning/tambah_anggota.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const BankSampahKemuning());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class BankSampahKemuning extends StatelessWidget {
+  const BankSampahKemuning({super.key});
 
   // This widget is the root of your application.
   @override
@@ -57,77 +56,60 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(widget.title),
-      // Add a button to open the drawer
-      leading: Builder(
-        builder: (context) => IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-      ),
-    ),
-    drawer: Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children:[
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          // Add a button to open the drawer
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
             ),
-            child: Text('Menu')
           ),
+        ),
+        drawer: Drawer(
+            child: ListView(padding: EdgeInsets.zero, children: [
+          const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Menu')),
           ListTile(
             leading: const Icon(Icons.dashboard),
             title: const Text('Dashboard'),
-            
-            onTap:(){
+            onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.payment),
             title: const Text('Transaksi Sampah'),
-            onTap: (){
+            onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.category),
             title: const Text('Jenis Sampah'),
-            onTap: (){
+            onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.print),
             title: const Text('Print / Ekspor Data'),
-            onTap: (){
+            onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text('Anggota'),
-            onTap: (){
+            onTap: () {
               Navigator.pop(context);
             },
           ),
@@ -139,12 +121,9 @@ Widget build(BuildContext context) {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const TambahAnggota()),
-              ); 
+              );
             },
           ),
-        ]
-      )
-    )
-  );
-}
+        ])));
+  }
 }
