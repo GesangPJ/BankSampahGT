@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "BankSampahGTApp",
+            "name": "bank_sampah_gtApp",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "BankSampahGTApp (profile mode)",
+            "name": "bank_sampah_gtApp (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "BankSampahGTApp (release mode)",
+            "name": "bank_sampah_gtApp (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
