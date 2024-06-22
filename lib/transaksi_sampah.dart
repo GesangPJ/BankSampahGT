@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'DatabaseHelper.dart';
+import 'database_helper.dart';
 
 class TambahTransaksi extends StatefulWidget {
-  const TambahTransaksi({super.key});
+  const TambahTransaksi({Key? key}) : super(key: key);
 
   @override
   State<TambahTransaksi> createState() => _TambahTransaksiState();
@@ -18,6 +18,15 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
   void initState() {
     super.initState();
     _fetchJenisSampah();
+  }
+
+  @override
+  void dispose() {
+    // Clean up controllers
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   Future<void> _fetchJenisSampah() async {
