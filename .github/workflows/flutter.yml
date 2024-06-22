@@ -1,4 +1,4 @@
-name: Flutter CI
+name: Flutter CI/CD
 
 on:
   push:
@@ -26,12 +26,23 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      #- name: Analyze code
-      #  run: flutter analyze
-
       - name: Run tests
         run: flutter test
+
       - name: Build APK
         run: flutter build apk
-      - name: Build Bundle
-        run: flutter build appbundle
+
+      # - name: Build Bundle
+      #   run: flutter build appbundle
+
+      # - name: Upload APK artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: bank-sampah-gt-release
+      #     path: build/app/outputs/flutter-apk/bank-sampah-gt.apk
+
+      # - name: Upload App Bundle artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: app-bundle
+      #     path: build/app/outputs/flutter-appbundle/app-release.aab
