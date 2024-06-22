@@ -1,9 +1,9 @@
-import 'package:BankSampahGT/tambah_anggota.dart';
+import 'package:bank_sampah_gt/tambah_anggota.dart';
 import 'package:flutter/material.dart';
-import 'package:BankSampahGT/daftar_anggota.dart';
-import 'package:BankSampahGT/jenis_sampah.dart';
-import 'package:BankSampahGT/transaksi_sampah.dart';
-//import 'package:BankSampahGT/tambah_jenis_sampah.dart';
+import 'package:bank_sampah_gt/daftar_anggota.dart';
+import 'package:bank_sampah_gt/jenis_sampah.dart';
+import 'package:bank_sampah_gt/transaksi_sampah.dart';
+//import 'package:bank_sampah_gt/tambah_jenis_sampah.dart';
 
 void main() {
   runApp(const BankSampahGT());
