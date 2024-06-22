@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'DatabaseHelper.dart';
+import 'database_helper.dart';
 
 class TambahAnggota extends StatefulWidget {
   final Map<String, dynamic>? anggota;
@@ -51,26 +51,38 @@ class _TambahAnggotaState extends State<TambahAnggota> {
         if (widget.isEdit) {
           final id = widget.anggota!['id'];
           await DatabaseHelper.instance.updateAnggota(id, row);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Data Anggota berhasil diperbarui.')),
-          );
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Data Anggota berhasil diperbarui.')),
+            );
+          }
         } else {
           final id = await DatabaseHelper.instance.insertAnggota(row);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Anggota berhasil ditambahkan dengan ID: $id')),
-          );
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text('Anggota berhasil ditambahkan dengan ID: $id')),
+            );
+          }
         }
-        Navigator.pop(context);
+
+        if (mounted) {
+          Navigator.pop(context);
+        }
       } catch (e) {
-        if (e.toString().contains('UNIQUE constraint failed')) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Nama anggota sudah ada.')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Gagal menambahkan anggota.')),
-          );
+        if (mounted) {
+          if (e.toString().contains('UNIQUE constraint failed')) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Nama anggota sudah ada.')),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Gagal menambahkan anggota.')),
+            );
+          }
         }
       }
     } else {
