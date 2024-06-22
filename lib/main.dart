@@ -36,36 +36,26 @@ class BankSampahGT extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Bank Sampah GT'),
+      home: const DashboardPage(title: 'Bank Sampah GT'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
-          // Add a button to open the drawer
           leading: Builder(
             builder: (context) => IconButton(
               icon: const Icon(Icons.menu),
@@ -76,12 +66,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         drawer: Drawer(
-            child: ListView(padding: EdgeInsets.zero, children: [
+            child: ListView(padding: EdgeInsets.zero, children: <Widget>[
           const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text('Menu')),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text('Menu'),
+          ),
           ListTile(
             leading: const Icon(Icons.dashboard),
             title: const Text('Dashboard'),
@@ -120,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           ListTile(
             leading: const Icon(Icons.person),
-            title: const Text('Anggota'),
+            title: const Text('Daftar Anggota'),
             onTap: () {
               Navigator.pop(context); // Close the drawer if you have one
               Navigator.push(
