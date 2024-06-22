@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'DatabaseHelper.dart';
+import 'package:bank_sampah_gt/database_helper.dart';
 
 class TambahJenisSampah extends StatefulWidget {
   final Map<String, dynamic>?
@@ -48,26 +48,47 @@ class _TambahJenisSampahState extends State<TambahJenisSampah> {
       return;
     }
 
-    if (widget.jenisSampah == null) {
-      // Insert new jenis sampah
-      await DatabaseHelper.instance.insertJenisSampah({
-        'nama_jenis_sampah': namaJenisSampah,
-        'harga_jenis_sampah': hargaJenisSampah,
-      });
-    } else {
-      // Update existing jenis sampah
-      await DatabaseHelper.instance.updateJenisSampah({
-        'id_jenis_sampah': widget.jenisSampah!['id_jenis_sampah'],
-        'nama_jenis_sampah': namaJenisSampah,
-        'harga_jenis_sampah': hargaJenisSampah,
-      });
+    try {
+      if (widget.jenisSampah == null) {
+        // Insert new jenis sampah
+        await DatabaseHelper.instance.insertJenisSampah({
+          'nama_jenis_sampah': namaJenisSampah,
+          'harga_jenis_sampah': hargaJenisSampah,
+        });
+      } else {
+        // Update existing jenis sampah
+        await DatabaseHelper.instance.updateJenisSampah({
+          'id_jenis_sampah': widget.jenisSampah!['id_jenis_sampah'],
+          'nama_jenis_sampah': namaJenisSampah,
+          'harga_jenis_sampah': hargaJenisSampah,
+        });
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(
+              const SnackBar(content: Text('Jenis sampah berhasil disimpan')),
+            )
+            .closed
+            .then((reason) {
+          if (mounted) {
+            Navigator.pop(context);
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        if (e.toString().contains('UNIQUE constraint failed')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Nama anggota sudah ada.')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Gagal menambahkan anggota.')),
+          );
+        }
+      }
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Jenis sampah berhasil disimpan')),
-    );
-
-    Navigator.pop(context);
   }
 
   @override
