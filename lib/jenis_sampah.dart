@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'DatabaseHelper.dart';
+import 'database_helper.dart';
 import 'tambah_jenis_sampah.dart';
-import 'EditJenisSampah.dart';
+import 'edit_jenis_sampah.dart';
 
 class DaftarJenisSampah extends StatefulWidget {
   const DaftarJenisSampah({Key? key}) : super(key: key);
@@ -40,17 +40,15 @@ class _DaftarJenisSampahState extends State<DaftarJenisSampah> {
               'Apakah anda ingin edit atau menghapus jenis sampah ini?'),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _navigateToEditJenisSampah(jenisSampah['id_jenis_sampah']);
-              },
-              child: const Text('Edit'),
-            ),
-            TextButton(
               onPressed: () async {
+                final navigator =
+                    Navigator.of(context); // Capture navigator instance
+                final scaffoldMessenger =
+                    ScaffoldMessenger.of(context); // Capture scaffold messenger
+
                 await _deleteJenisSampah(jenisSampah['id_jenis_sampah']);
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+                navigator.pop(); // Use the captured navigator instance
+                scaffoldMessenger.showSnackBar(
                   const SnackBar(
                     content: Text('Jenis Sampah berhasil dihapus.'),
                   ),
@@ -127,14 +125,14 @@ class _DaftarJenisSampahState extends State<DaftarJenisSampah> {
                                     value: 'edit',
                                     child: ListTile(
                                       leading: Icon(Icons.edit),
-                                      title: const Text('Edit'),
+                                      title: Text('Edit'),
                                     ),
                                   ),
                                   const PopupMenuItem(
                                     value: 'delete',
                                     child: ListTile(
                                       leading: Icon(Icons.delete),
-                                      title: const Text('Hapus'),
+                                      title: Text('Hapus'),
                                     ),
                                   ),
                                 ],
@@ -168,11 +166,11 @@ class _DaftarJenisSampahState extends State<DaftarJenisSampah> {
   }
 
   void _navigateToEditJenisSampah(int id) async {
+    final navigator = Navigator.of(context); // Capture the navigator instance
     Map<String, dynamic>? jenisSampah =
         await DatabaseHelper.instance.getJenisSampahById(id);
     if (jenisSampah != null) {
-      await Navigator.push(
-        context,
+      await navigator.push(
         MaterialPageRoute(
           builder: (context) => TambahJenisSampah(
             jenisSampah: jenisSampah,
