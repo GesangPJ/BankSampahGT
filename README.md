@@ -1,3 +1,5 @@
+![BankSampahGT Flutter Test](https://github.com/GesangPJ/BankSampahGT/blob/main/.github/workflows/flutter.yml/badge.svg)
+
 # BANK SAMPAH GT
 
 Aplikasi pengelolaan bank sampah menggunakan Flutter.
