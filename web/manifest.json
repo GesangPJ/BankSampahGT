@@ -1,6 +1,6 @@
 {
     "name": "Bank Sampah GT",
-    "short_name": "BankSampahGT",
+    "short_name": "bank_sampah_gt",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
