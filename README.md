@@ -1,4 +1,4 @@
-![BankSampahGT Flutter Test](https://github.com/GesangPJ/BankSampahGT/blob/main/.github/workflows/flutter.yml/badge.svg)
+[![Flutter CI](https://github.com/GesangPJ/BankSampahGT/actions/workflows/flutter.yml/badge.svg?branch=main)](https://github.com/GesangPJ/BankSampahGT/actions/workflows/flutter.yml)
 
 # BANK SAMPAH GT
 
