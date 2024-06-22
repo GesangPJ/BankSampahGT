@@ -7,10 +7,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:BankSampahGT/daftar_anggota.dart';
-import 'package:BankSampahGT/jenis_sampah.dart';
-import 'package:BankSampahGT/tambah_anggota.dart';
-import 'package:BankSampahGT/main.dart';
+import 'package:bank_sampah_gt/daftar_anggota.dart';
+import 'package:bank_sampah_gt/jenis_sampah.dart';
+import 'package:bank_sampah_gt/tambah_anggota.dart';
+import 'package:bank_sampah_gt/main.dart';
 
 void main() {
   testWidgets('Test Drawer Navigation', (WidgetTester tester) async {
