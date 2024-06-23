@@ -75,8 +75,8 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE $tableTransaksi (
         $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnIdAnggota INTEGER NOT NULL,
-        $columnTanggalTransaksi TEXT NOT NULL,
+        $columnIdAnggota INTEGER,
+        $columnTanggalTransaksi TEXT,
         $columnTanggalUpdate TEXT,
         FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId)
       )
@@ -86,10 +86,10 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE $tableDetailTransaksi (
         $columnIdDetailTransaksi INTEGER PRIMARY KEY AUTO INCREMENT,
-        $columnIdTransaksiDetail INTEGER NOT NULL,
-        $columnIdJenisSampahDetail INTEGER NOT NULL,
-        $columnBerat INTEGER NOT NULL,
-        $columnTotalHarga INTEGER NOT NULL,
+        $columnIdTransaksiDetail INTEGER,
+        $columnIdJenisSampahDetail INTEGER,
+        $columnBerat INTEGER,
+        $columnTotalHarga INTEGER,
         FOREIGN KEY ($columnIdTransaksiDetail) REFERENCES $tableTransaksi ($columnIdTransaksi),
         FOREIGN KEY ($columnIdJenisSampahDetail) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
       )
