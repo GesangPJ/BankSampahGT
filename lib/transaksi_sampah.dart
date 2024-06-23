@@ -9,7 +9,8 @@ class TambahTransaksi extends StatefulWidget {
 }
 
 class _TambahTransaksiState extends State<TambahTransaksi> {
-  int _selectedAnggota = 1; // Contoh ID anggota
+  int _selectedAnggota = 1; // Default ID anggota
+  List<Map<String, dynamic>> _anggotaList = [];
   List<Map<String, dynamic>> _jenisSampahList = [];
   List<TextEditingController> _controllers = [];
   int _totalHarga = 0;
@@ -17,6 +18,7 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
   @override
   void initState() {
     super.initState();
+    _fetchAnggota();
     _fetchJenisSampah();
   }
 
@@ -27,6 +29,17 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  Future<void> _fetchAnggota() async {
+    List<Map<String, dynamic>> anggota =
+        await DatabaseHelper.instance.getAllAnggota();
+    setState(() {
+      _anggotaList = anggota;
+      if (_anggotaList.isNotEmpty) {
+        _selectedAnggota = _anggotaList[0]['id'];
+      }
+    });
   }
 
   Future<void> _fetchJenisSampah() async {
@@ -40,37 +53,57 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
   }
 
   void _addTransaksi() async {
-    // Simpan transaksi ke tabel transaksi
-    String tanggalTransaksi = DateTime.now().toString();
-    int idTransaksi = await DatabaseHelper.instance.insertTransaksi({
-      'id_anggota': _selectedAnggota,
-      'jumlah_transaksi':
-          _jenisSampahList.length, // Contoh jumlah sampah dalam transaksi
-      'tanggal_transaksi': tanggalTransaksi,
-    });
+    try {
+      // Save transaction to 'transaksi' table
+      DateTime now = DateTime.now();
+      String tanggalTransaksi =
+          '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}';
 
-    // Loop untuk menyimpan detail transaksi ke tabel detail_transaksi
-    for (int i = 0; i < _jenisSampahList.length; i++) {
-      int berat = int.tryParse(_controllers[i].text) ?? 0;
-      int totalHarga = _jenisSampahList[i]['harga_jenis_sampah'] * berat;
-
-      await DatabaseHelper.instance.insertDetailTransaksi({
-        'id_transaksi': idTransaksi,
-        'id_jenis_sampah': _jenisSampahList[i]['id_jenis_sampah'],
-        'berat': berat,
-        'total_harga': totalHarga,
+      // Step 1: Insert into 'transaksi' table
+      int idTransaksi = await DatabaseHelper.instance.insertTransaksi({
+        DatabaseHelper.columnIdAnggota: _selectedAnggota,
+        DatabaseHelper.columnTanggalTransaksi: tanggalTransaksi,
       });
 
-      _totalHarga += totalHarga;
+      // Step 2: Insert detail transaksi into 'detail_transaksi' table
+      for (int i = 0; i < _jenisSampahList.length; i++) {
+        int berat = int.tryParse(_controllers[i].text) ?? 0;
+        int totalHarga =
+            _jenisSampahList[i][DatabaseHelper.columnHargaJenisSampah] * berat;
+
+        // Prepare data for detail transaksi
+        Map<String, dynamic> detailTransaksi = {
+          DatabaseHelper.columnIdTransaksiDetail: idTransaksi,
+          DatabaseHelper.columnIdJenisSampahDetail: _jenisSampahList[i]
+              [DatabaseHelper.columnIdJenisSampah],
+          DatabaseHelper.columnBerat: berat,
+          DatabaseHelper.columnTotalHarga: totalHarga,
+        };
+
+        // Insert detail transaksi into database
+        await DatabaseHelper.instance.insertDetailTransaksi(detailTransaksi);
+
+        _totalHarga += totalHarga;
+      }
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Transaksi berhasil disimpan')),
+      );
+
+      // Clear input values after successful save
+      setState(() {
+        for (var controller in _controllers) {
+          controller.clear();
+        }
+        _totalHarga = 0;
+      });
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyimpan transaksi: $e')),
+      );
     }
-
-    // Tampilkan pesan sukses
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Transaksi berhasil disimpan')),
-    );
-
-    // Kembali ke halaman sebelumnya
-    Navigator.pop(context);
   }
 
   @override
@@ -79,20 +112,19 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
       appBar: AppBar(
         title: const Text('Tambah Transaksi'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             DropdownButtonFormField<int>(
               value: _selectedAnggota,
-              items: [
-                const DropdownMenuItem<int>(
-                  value: 1, // Contoh ID anggota
-                  child: Text(
-                      'Anggota A'), // Ganti dengan nama anggota atau ambil dari database
-                ),
-              ],
+              items: _anggotaList.map<DropdownMenuItem<int>>((anggota) {
+                return DropdownMenuItem<int>(
+                  value: anggota[DatabaseHelper.columnId],
+                  child: Text(anggota[DatabaseHelper.columnNama]),
+                );
+              }).toList(),
               onChanged: (value) {
                 setState(() {
                   _selectedAnggota = value!;
@@ -105,13 +137,14 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
             const SizedBox(height: 20),
             ListView.builder(
               shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               itemCount: _jenisSampahList.length,
               itemBuilder: (context, index) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        'Jenis Sampah: ${_jenisSampahList[index]['nama_jenis_sampah']}'),
+                        'Jenis Sampah: ${_jenisSampahList[index][DatabaseHelper.columnNamaJenisSampah]}'),
                     TextField(
                       controller: _controllers[index],
                       keyboardType: TextInputType.number,
@@ -127,6 +160,10 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _addTransaksi,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
               child: const Text('Simpan Transaksi'),
             ),
           ],
