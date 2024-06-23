@@ -1,5 +1,7 @@
 [![Flutter CI](https://github.com/GesangPJ/BankSampahGT/actions/workflows/flutter.yml/badge.svg?branch=main)](https://github.com/GesangPJ/BankSampahGT/actions/workflows/flutter.yml)
 
+[(https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-nd.svg)]
+
 # BANK SAMPAH GT
 
 Aplikasi pengelolaan bank sampah menggunakan Flutter.
