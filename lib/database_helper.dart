@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
   static const _databaseName = "banksampah.db";
-  static const _databaseVersion = 1;
+  static const _databaseVersion = 2;
 
   // Table Anggota
   static const tableAnggota = 'anggota';
@@ -18,15 +18,14 @@ class DatabaseHelper {
   static const columnNamaJenisSampah = 'nama_jenis_sampah';
   static const columnHargaJenisSampah = 'harga_jenis_sampah';
 
-  // Tabel Transaksi
+  // Table Transaksi
   static const tableTransaksi = 'transaksi';
   static const columnIdTransaksi = 'id_transaksi';
   static const columnIdAnggota = 'id_anggota';
   static const columnTanggalTransaksi = 'tanggal_transaksi';
-  static const columnTanggalUpdate =
-      'tanggal_update'; // Added for last updated date
+  static const columnTanggalUpdate = 'tanggal_update';
 
-  // Tabel Detail Transaksi
+  // Table Detail Transaksi
   static const tableDetailTransaksi = 'detail_transaksi';
   static const columnIdDetailTransaksi = 'id_detail_transaksi';
   static const columnIdTransaksiDetail = 'id_transaksi';
@@ -50,6 +49,7 @@ class DatabaseHelper {
       path,
       version: _databaseVersion,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -71,51 +71,57 @@ class DatabaseHelper {
     )
   ''');
 
-    // Buat tabel transaksi
     await db.execute('''
-      CREATE TABLE $tableTransaksi (
-        $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnIdAnggota INTEGER,
-        $columnTanggalTransaksi TEXT,
-        $columnTanggalUpdate TEXT,
-        FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId)
-      )
-    ''');
+    CREATE TABLE $tableTransaksi (
+      $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
+      $columnIdAnggota INTEGER NOT NULL,
+      $columnTanggalTransaksi TEXT NOT NULL,
+      $columnTanggalUpdate TEXT,
+      FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId)
+    )
+  ''');
 
-    // Buat tabel detail_transaksi
     await db.execute('''
-      CREATE TABLE $tableDetailTransaksi (
-        $columnIdDetailTransaksi INTEGER PRIMARY KEY AUTO INCREMENT,
-        $columnIdTransaksiDetail INTEGER,
-        $columnIdJenisSampahDetail INTEGER,
-        $columnBerat INTEGER,
-        $columnTotalHarga INTEGER,
-        FOREIGN KEY ($columnIdTransaksiDetail) REFERENCES $tableTransaksi ($columnIdTransaksi),
-        FOREIGN KEY ($columnIdJenisSampahDetail) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
-      )
-    ''');
+    CREATE TABLE $tableDetailTransaksi (
+      $columnIdDetailTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
+      $columnIdTransaksiDetail INTEGER NOT NULL,
+      $columnIdJenisSampahDetail INTEGER NOT NULL,
+      $columnBerat INTEGER NOT NULL,
+      $columnTotalHarga INTEGER NOT NULL,
+      FOREIGN KEY ($columnIdTransaksiDetail) REFERENCES $tableTransaksi ($columnIdTransaksi),
+      FOREIGN KEY ($columnIdJenisSampahDetail) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
+    )
+  ''');
   }
 
-  //Simpan Data Anggota
+  void _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+      ALTER TABLE $tableTransaksi ADD COLUMN $columnTanggalUpdate TEXT
+    ''');
+    }
+  }
+
+  // Fungsi untuk menyimpan data anggota
   Future<int> insertAnggota(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert(tableAnggota, row);
   }
 
-  //Ambil Data Anggota
+  // Fungsi untuk mendapatkan semua data anggota
   Future<List<Map<String, dynamic>>> getAllAnggota() async {
     Database db = await instance.database;
     return await db.query(tableAnggota);
   }
 
-  // Hapus Data Anggota
+  // Fungsi untuk menghapus data anggota
   Future<int> deleteAnggota(int id) async {
     Database db = await instance.database;
     return await db
         .delete(tableAnggota, where: '$columnId = ?', whereArgs: [id]);
   }
 
-//Update Data Anggota
+  // Fungsi untuk mengupdate data anggota
   Future<int> updateAnggota(int id, Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db
@@ -128,13 +134,13 @@ class DatabaseHelper {
     return await db.query(tableJenisSampah);
   }
 
-  //Tambah Jenis Sampah
+  // Fungsi untuk menambah jenis sampah
   Future<int> insertJenisSampah(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert(tableJenisSampah, row);
   }
 
-  // Update Jenis Sampah
+  // Fungsi untuk mengupdate jenis sampah
   Future<int> updateJenisSampah(Map<String, dynamic> row) async {
     Database db = await instance.database;
     int id = row[columnIdJenisSampah];
@@ -142,32 +148,48 @@ class DatabaseHelper {
         where: '$columnIdJenisSampah = ?', whereArgs: [id]);
   }
 
-  // Hapus Jenis Sampah
+  // Fungsi untuk menghapus jenis sampah
   Future<int> deleteJenisSampah(int id) async {
     Database db = await instance.database;
     return await db.delete(tableJenisSampah,
         where: '$columnIdJenisSampah = ?', whereArgs: [id]);
   }
 
-  // Ambil Jenis Sampah dengan ID
+  // Fungsi untuk mendapatkan jenis sampah dengan ID
   Future<Map<String, dynamic>?> getJenisSampahById(int id) async {
     Database db = await instance.database;
     List<Map<String, dynamic>> results = await db.query(tableJenisSampah,
-        where: '$columnIdJenisSampah = ?',
-        whereArgs: [id],
-        limit: 1); // Hanya ambil satu data karena ID unik
+        where: '$columnIdJenisSampah = ?', whereArgs: [id], limit: 1);
     return results.isNotEmpty ? results.first : null;
   }
 
-  // Function to insert a new transaction into the 'transaksi' table
+  // Fungsi untuk menambah transaksi baru ke tabel 'transaksi'
   Future<int> insertTransaksi(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert(tableTransaksi, row);
   }
 
-  // Function to insert a new detail transaksi into the 'detail_transaksi' table
+  // Fungsi untuk menambah detail transaksi baru ke tabel 'detail_transaksi'
   Future<int> insertDetailTransaksi(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert(tableDetailTransaksi, row);
+  }
+
+  // Fungsi untuk mendapatkan data transaksi per anggota
+  Future<List<Map<String, dynamic>>> getDataTransaksi() async {
+    Database db = await instance.database;
+
+    String query = '''
+      SELECT
+        a.$columnNama as nama,
+        SUM(dt.$columnBerat) as total_berat,
+        SUM(dt.$columnTotalHarga) as total_harga
+      FROM $tableTransaksi t
+      JOIN $tableAnggota a ON t.$columnIdAnggota = a.$columnId
+      JOIN $tableDetailTransaksi dt ON t.$columnIdTransaksi = dt.$columnIdTransaksiDetail
+      GROUP BY a.$columnNama
+    ''';
+
+    return await db.rawQuery(query);
   }
 }
