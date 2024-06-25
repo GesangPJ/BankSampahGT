@@ -1,5 +1,6 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables
+
 import 'package:bank_sampah_gt/tambah_anggota.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bank_sampah_gt/daftar_anggota.dart';
 import 'package:bank_sampah_gt/jenis_sampah.dart';
@@ -11,7 +12,7 @@ void main() {
 }
 
 class BankSampahGT extends StatelessWidget {
-  const BankSampahGT({Key? key}) : super(key: key);
+  const BankSampahGT({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +27,7 @@ class BankSampahGT extends StatelessWidget {
 }
 
 class DashboardPage extends StatefulWidget {
+  // ignore: use_super_parameters
   const DashboardPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
@@ -35,10 +37,6 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  Future<List<Map<String, dynamic>>> _fetchData() async {
-    return DatabaseHelper.instance.getAllDataTransaksi();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,7 +112,7 @@ class _DashboardPageState extends State<DashboardPage> {
             leading: const Icon(Icons.person_add),
             title: const Text('Tambah Anggota'),
             onTap: () {
-              Navigator.pop(context); // Tutup laci terlebih dahulu
+              Navigator.pop(context); // Close the drawer if you have one
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const TambahAnggota()),
@@ -123,55 +121,43 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ]),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Text(
-              'Transaksi Terbaru:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SingleChildScrollView(
+          child: FutureBuilder<List<Map<String, dynamic>>>(
+            future: DatabaseHelper.instance.getAllDataTransaksi(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(
+                    child: Text('Data transaksi tidak ditemukan.'));
+              } else {
+                return DataTable(
+                  columnSpacing: 10,
+                  columns: [
+                    const DataColumn(label: Text('Tanggal/Jam')),
+                    const DataColumn(label: Text('Nama')),
+                    const DataColumn(label: Text('Jenis Sampah')),
+                    const DataColumn(label: Text('Berat')),
+                    const DataColumn(label: Text('Total Harga')),
+                  ],
+                  rows: snapshot.data!.map((transaksi) {
+                    return DataRow(cells: [
+                      DataCell(Text(transaksi['tanggal_transaksi'].toString())),
+                      DataCell(Text(transaksi['nama_anggota'].toString())),
+                      DataCell(Text(transaksi['jenis_sampah'].toString())),
+                      DataCell(Text('${transaksi['berat']} kg')),
+                      DataCell(Text('Rp ${transaksi['total_harga']}')),
+                    ]);
+                  }).toList(),
+                );
+              }
+            },
           ),
-          Expanded(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: _fetchData(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                      child: Text('Data transaksi tidak ditemukan.'));
-                } else {
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      columnSpacing: 16,
-                      columns: const [
-                        DataColumn(label: Text('Tanggal/Jam')),
-                        DataColumn(label: Text('Nama')),
-                        DataColumn(label: Text('Jenis Sampah')),
-                        DataColumn(label: Text('Berat')),
-                        DataColumn(label: Text('Jumlah')),
-                      ],
-                      rows: snapshot.data!.map((transaksi) {
-                        return DataRow(cells: [
-                          DataCell(Text(transaksi['tanggal_transaksi'])),
-                          DataCell(Text(transaksi['nama_anggota'].toString())),
-                          DataCell(Text(transaksi['jenis_sampah'].toString())),
-                          DataCell(Text('${transaksi['berat']} kg')),
-                          DataCell(Text('Rp ${transaksi['total_harga']}')),
-                        ]);
-                      }).toList(),
-                    ),
-                  );
-                }
-              },
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
