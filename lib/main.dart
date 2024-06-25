@@ -35,8 +35,6 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  int _selectedMemberId = -1;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,14 +125,13 @@ class _DashboardPageState extends State<DashboardPage> {
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Text(
-              'Transaksi Terbaru:',
+              'Detail Semua Transaksi:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future:
-                  DatabaseHelper.instance.getDataTransaksi(_selectedMemberId),
+              future: DatabaseHelper.instance.getAllDataTransaksi(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
