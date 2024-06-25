@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -182,18 +183,28 @@ class DatabaseHelper {
     Database db = await instance.database;
 
     String query = '''
-  SELECT
-    t.$columnTanggalTransaksi,
-    a.$columnNama AS nama_anggota,
-    js.$columnNamaJenisSampah AS jenis_sampah,
-    t.$columnBerat,
-    t.$columnTotalHarga
-  FROM $tableTransaksi t
-  JOIN $tableAnggota a ON t.$columnIdAnggota = a.$columnId
-  JOIN $tableJenisSampah js ON t.$columnIdJenisSampahTransaksi = js.$columnIdJenisSampah
-  ORDER BY t.$columnTanggalTransaksi DESC
-  ''';
+SELECT
+  t.$columnTanggalTransaksi,
+  a.$columnNama AS nama_anggota,
+  js.$columnNamaJenisSampah AS jenis_sampah,
+  t.$columnBerat,
+  t.$columnTotalHarga
+FROM $tableTransaksi t
+JOIN $tableAnggota a ON t.$columnIdAnggota = a.$columnId
+JOIN $tableJenisSampah js ON t.$columnIdJenisSampahTransaksi = js.$columnIdJenisSampah
+ORDER BY t.$columnTanggalTransaksi DESC
+''';
 
-    return await db.rawQuery(query);
+    if (kDebugMode) {
+      print("Executing query: $query");
+    }
+
+    List<Map<String, dynamic>> result = await db.rawQuery(query);
+
+    if (kDebugMode) {
+      print("Query result: $result");
+    }
+
+    return result;
   }
 }
