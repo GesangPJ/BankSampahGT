@@ -66,15 +66,8 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
 
     try {
       DateTime now = DateTime.now();
-      String tanggalTransaksi =
-          '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}';
-
-      int idTransaksi = await DatabaseHelper.instance.insertTransaksi({
-        DatabaseHelper.columnIdAnggota: _selectedAnggota,
-        DatabaseHelper.columnTanggalTransaksi: tanggalTransaksi,
-        DatabaseHelper.columnTanggalUpdate:
-            tanggalTransaksi, // Ensure this field is filled
-      });
+      String tanggalTransaksi = now.toIso8601String();
+      String tanggalUpdate = now.toIso8601String();
 
       int berat = int.tryParse(_beratController.text) ?? 0;
       int hargaPerKg = _jenisSampahList.firstWhere((element) =>
@@ -82,14 +75,15 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
           _selectedJenisSampah)[DatabaseHelper.columnHargaJenisSampah];
       int totalHarga = hargaPerKg * berat;
 
-      Map<String, dynamic> detailTransaksi = {
-        DatabaseHelper.columnIdTransaksiDetail: idTransaksi,
-        DatabaseHelper.columnIdJenisSampahDetail: _selectedJenisSampah,
+      // ignore: unused_local_variable
+      int idTransaksi = await DatabaseHelper.instance.insertTransaksi({
+        DatabaseHelper.columnIdAnggota: _selectedAnggota,
+        DatabaseHelper.columnIdJenisSampahTransaksi: _selectedJenisSampah,
+        DatabaseHelper.columnTanggalTransaksi: tanggalTransaksi,
+        DatabaseHelper.columnTanggalUpdate: tanggalUpdate,
         DatabaseHelper.columnBerat: berat,
         DatabaseHelper.columnTotalHarga: totalHarga,
-      };
-
-      await DatabaseHelper.instance.insertDetailTransaksi(detailTransaksi);
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Transaksi berhasil disimpan')),
