@@ -184,7 +184,7 @@ class DatabaseHelper {
 
     String query = '''
 SELECT
-  t.$columnTanggalTransaksi,
+  strftime('%Y-%m-%d %H:%M:%S', t.$columnTanggalTransaksi) AS tanggal_transaksi,
   a.$columnNama AS nama_anggota,
   js.$columnNamaJenisSampah AS jenis_sampah,
   t.$columnBerat,
