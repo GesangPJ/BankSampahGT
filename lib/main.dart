@@ -11,6 +11,7 @@ void main() {
 }
 
 class BankSampahGT extends StatelessWidget {
+  // ignore: use_key_in_widget_constructors
   const BankSampahGT({Key? key});
 
   @override
@@ -26,7 +27,7 @@ class BankSampahGT extends StatelessWidget {
 }
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({Key? key, required this.title}) : super(key: key);
+  const DashboardPage({super.key, required this.title});
 
   final String title;
 
@@ -122,8 +123,8 @@ class _DashboardPageState extends State<DashboardPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
+          const Padding(
+            padding: EdgeInsets.all(20.0),
             child: Text(
               'Detail Semua Transaksi:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -134,17 +135,18 @@ class _DashboardPageState extends State<DashboardPage> {
               future: DatabaseHelper.instance.getAllDataTransaksi(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('Data transaksi tidak ditemukan.'));
+                  return const Center(
+                      child: Text('Data transaksi tidak ditemukan.'));
                 } else {
                   return SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
                       columnSpacing: 16,
-                      columns: [
+                      columns: const [
                         DataColumn(label: Text('Tanggal/Jam')),
                         DataColumn(label: Text('Nama')),
                         DataColumn(label: Text('Berat')),
