@@ -1,4 +1,5 @@
 import 'package:bank_sampah_gt/tambah_anggota.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bank_sampah_gt/daftar_anggota.dart';
 import 'package:bank_sampah_gt/jenis_sampah.dart';
@@ -10,7 +11,7 @@ void main() {
 }
 
 class BankSampahGT extends StatelessWidget {
-  const BankSampahGT({super.key});
+  const BankSampahGT({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class BankSampahGT extends StatelessWidget {
 }
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key, required this.title});
+  const DashboardPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -34,6 +35,10 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  Future<List<Map<String, dynamic>>> _fetchData() async {
+    return DatabaseHelper.instance.getAllDataTransaksi();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,7 +135,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: DatabaseHelper.instance.getAllDataTransaksi(),
+              future: _fetchData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -149,12 +154,11 @@ class _DashboardPageState extends State<DashboardPage> {
                         DataColumn(label: Text('Nama')),
                         DataColumn(label: Text('Jenis Sampah')),
                         DataColumn(label: Text('Berat')),
-                        DataColumn(label: Text('Total Harga')),
+                        DataColumn(label: Text('Jumlah')),
                       ],
                       rows: snapshot.data!.map((transaksi) {
                         return DataRow(cells: [
-                          DataCell(
-                              Text(transaksi['tanggal_transaksi'].toString())),
+                          DataCell(Text(transaksi['tanggal_transaksi'])),
                           DataCell(Text(transaksi['nama_anggota'].toString())),
                           DataCell(Text(transaksi['jenis_sampah'].toString())),
                           DataCell(Text('${transaksi['berat']} kg')),
