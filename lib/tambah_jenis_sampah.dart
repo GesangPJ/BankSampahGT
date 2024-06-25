@@ -5,7 +5,7 @@ class TambahJenisSampah extends StatefulWidget {
   final Map<String, dynamic>?
       jenisSampah; // Parameter jenisSampah untuk edit mode
 
-  const TambahJenisSampah({Key? key, this.jenisSampah}) : super(key: key);
+  const TambahJenisSampah({super.key, this.jenisSampah});
 
   @override
   State<TambahJenisSampah> createState() => _TambahJenisSampahState();
