@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
   static const _databaseName = "banksampah.db";
-  static const _databaseVersion = 2;
+  static const _databaseVersion = 3;
 
   // Table Anggota
   static const tableAnggota = 'anggota';
@@ -22,16 +22,11 @@ class DatabaseHelper {
   static const tableTransaksi = 'transaksi';
   static const columnIdTransaksi = 'id_transaksi';
   static const columnIdAnggota = 'id_anggota';
-  static const columnTanggalTransaksi = 'tanggal_transaksi';
-  static const columnTanggalUpdate = 'tanggal_update';
-
-  // Table Detail Transaksi
-  static const tableDetailTransaksi = 'detail_transaksi';
-  static const columnIdDetailTransaksi = 'id_detail_transaksi';
-  static const columnIdTransaksiDetail = 'id_transaksi';
-  static const columnIdJenisSampahDetail = 'id_jenis_sampah';
+  static const columnIdJenisSampahTransaksi = 'id_jenis_sampah_transaksi';
   static const columnBerat = 'berat';
   static const columnTotalHarga = 'total_harga';
+  static const columnTanggalTransaksi = 'dibuat';
+  static const columnTanggalUpdate = 'diubah';
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -75,29 +70,34 @@ class DatabaseHelper {
     CREATE TABLE $tableTransaksi (
       $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
       $columnIdAnggota INTEGER NOT NULL,
+      $columnIdJenisSampahTransaksi INTEGER NOT NULL,
       $columnTanggalTransaksi TEXT NOT NULL,
       $columnTanggalUpdate TEXT,
-      FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId)
-    )
-  ''');
-
-    await db.execute('''
-    CREATE TABLE $tableDetailTransaksi (
-      $columnIdDetailTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
-      $columnIdTransaksiDetail INTEGER NOT NULL,
-      $columnIdJenisSampahDetail INTEGER NOT NULL,
       $columnBerat INTEGER NOT NULL,
       $columnTotalHarga INTEGER NOT NULL,
-      FOREIGN KEY ($columnIdTransaksiDetail) REFERENCES $tableTransaksi ($columnIdTransaksi),
-      FOREIGN KEY ($columnIdJenisSampahDetail) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
+      FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId),
+      FOREIGN KEY ($columnIdJenisSampahTransaksi) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
     )
   ''');
   }
 
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2) {
+    if (oldVersion < 3) {
       await db.execute('''
-      ALTER TABLE $tableTransaksi ADD COLUMN $columnTanggalUpdate TEXT
+      DROP TABLE IF EXISTS transaksi;
+    ''');
+      await db.execute('''
+      CREATE TABLE $tableTransaksi (
+        $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
+        $columnIdAnggota INTEGER NOT NULL,
+        $columnIdJenisSampah INTEGER NOT NULL,
+        $columnBerat INTEGER NOT NULL,
+        $columnTotalHarga INTEGER NOT NULL,
+        $columnTanggalTransaksi TEXT NOT NULL,
+        $columnTanggalUpdate TEXT NOT NULL,
+        FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId),
+        FOREIGN KEY ($columnIdJenisSampah) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
+      )
     ''');
     }
   }
@@ -163,16 +163,18 @@ class DatabaseHelper {
     return results.isNotEmpty ? results.first : null;
   }
 
-  // Fungsi untuk menambah transaksi baru ke tabel 'transaksi'
+  // Fungsi untuk menambah transaksi baru
   Future<int> insertTransaksi(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert(tableTransaksi, row);
   }
 
-  // Fungsi untuk menambah detail transaksi baru ke tabel 'detail_transaksi'
-  Future<int> insertDetailTransaksi(Map<String, dynamic> row) async {
+  // Fungsi untuk mengupdate transaksi
+  Future<int> updateTransaksi(int id, Map<String, dynamic> row) async {
     Database db = await instance.database;
-    return await db.insert(tableDetailTransaksi, row);
+    row[columnTanggalUpdate] = DateTime.now().toIso8601String();
+    return await db.update(tableTransaksi, row,
+        where: '$columnIdTransaksi = ?', whereArgs: [id]);
   }
 
   // Fungsi untuk mendapatkan semua data transaksi
@@ -180,15 +182,16 @@ class DatabaseHelper {
     Database db = await instance.database;
 
     String query = '''
-    SELECT
-      t.$columnTanggalTransaksi,
-      a.$columnNama as nama_anggota,
-      dt.$columnBerat,
-      dt.$columnTotalHarga
-    FROM $tableTransaksi t
-    JOIN $tableAnggota a ON t.$columnIdAnggota = a.$columnId
-    JOIN $tableDetailTransaksi dt ON t.$columnIdTransaksi = dt.$columnIdTransaksiDetail
-    ORDER BY t.$columnTanggalTransaksi DESC
+  SELECT
+    t.$columnTanggalTransaksi,
+    a.$columnNama AS nama_anggota,
+    js.$columnNamaJenisSampah AS jenis_sampah,
+    t.$columnBerat,
+    t.$columnTotalHarga
+  FROM $tableTransaksi t
+  JOIN $tableAnggota a ON t.$columnIdAnggota = a.$columnId
+  JOIN $tableJenisSampah js ON t.$columnIdJenisSampahTransaksi = js.$columnIdJenisSampah
+  ORDER BY t.$columnTanggalTransaksi DESC
   ''';
 
     return await db.rawQuery(query);
