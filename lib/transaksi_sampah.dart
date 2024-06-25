@@ -1,8 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 
 class TambahTransaksi extends StatefulWidget {
-  const TambahTransaksi({Key? key}) : super(key: key);
+  const TambahTransaksi({super.key});
 
   @override
   State<TambahTransaksi> createState() => _TambahTransaksiState();
@@ -14,6 +16,7 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
   final TextEditingController _beratController = TextEditingController();
   List<Map<String, dynamic>> _anggotaList = [];
   List<Map<String, dynamic>> _jenisSampahList = [];
+  // ignore: unused_field
   int _totalHarga = 0;
 
   @override
