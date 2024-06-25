@@ -153,9 +153,10 @@ class _DashboardPageState extends State<DashboardPage> {
                       ],
                       rows: snapshot.data!.map((transaksi) {
                         return DataRow(cells: [
-                          DataCell(Text(transaksi['tanggal_transaksi'])),
-                          DataCell(Text(transaksi['nama_anggota'])),
-                          DataCell(Text(transaksi['jenis_sampah'])),
+                          DataCell(
+                              Text(transaksi['tanggal_transaksi'].toString())),
+                          DataCell(Text(transaksi['nama_anggota'].toString())),
+                          DataCell(Text(transaksi['jenis_sampah'].toString())),
                           DataCell(Text('${transaksi['berat']} kg')),
                           DataCell(Text('Rp ${transaksi['total_harga']}')),
                         ]);
