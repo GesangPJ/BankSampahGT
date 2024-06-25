@@ -1,10 +1,11 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'tambah_jenis_sampah.dart';
-import 'edit_jenis_sampah.dart';
 
 class DaftarJenisSampah extends StatefulWidget {
-  const DaftarJenisSampah({Key? key}) : super(key: key);
+  const DaftarJenisSampah({super.key});
 
   @override
   _DaftarJenisSampahState createState() => _DaftarJenisSampahState();
