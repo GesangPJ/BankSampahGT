@@ -69,16 +69,16 @@ class DatabaseHelper {
 
     await db.execute('''
     CREATE TABLE $tableTransaksi (
-      $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
-      $columnIdAnggota INTEGER NOT NULL,
-      $columnIdJenisSampahTransaksi INTEGER NOT NULL,
-      $columnTanggalTransaksi TEXT NOT NULL,
-      $columnTanggalUpdate TEXT,
-      $columnBerat INTEGER NOT NULL,
-      $columnTotalHarga INTEGER NOT NULL,
-      FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId),
-      FOREIGN KEY ($columnIdJenisSampahTransaksi) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
-    )
+  $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
+  $columnIdAnggota INTEGER NOT NULL,
+  $columnIdJenisSampahTransaksi INTEGER NOT NULL,
+  $columnTanggalTransaksi TEXT NOT NULL,
+  $columnTanggalUpdate TEXT,
+  $columnBerat REAL NOT NULL,
+  $columnTotalHarga INTEGER NOT NULL,
+  FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId),
+  FOREIGN KEY ($columnIdJenisSampahTransaksi) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
+)
   ''');
   }
 
@@ -166,12 +166,19 @@ class DatabaseHelper {
 
   // Fungsi untuk menambah transaksi baru
   Future<int> insertTransaksi(Map<String, dynamic> row) async {
+    if (row[columnBerat] <= 0) {
+      throw Exception('Berat harus lebih besar dari 0.');
+    }
+
     Database db = await instance.database;
     return await db.insert(tableTransaksi, row);
   }
 
-  // Fungsi untuk mengupdate transaksi
   Future<int> updateTransaksi(int id, Map<String, dynamic> row) async {
+    if (row[columnBerat] <= 0) {
+      throw Exception('Berat harus lebih besar dari 0.');
+    }
+
     Database db = await instance.database;
     row[columnTanggalUpdate] = DateTime.now().toIso8601String();
     return await db.update(tableTransaksi, row,
