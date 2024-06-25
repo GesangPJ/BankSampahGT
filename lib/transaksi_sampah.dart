@@ -70,11 +70,20 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
       String tanggalTransaksi = now.toIso8601String();
       String tanggalUpdate = now.toIso8601String();
 
-      int berat = int.tryParse(_beratController.text) ?? 0;
+      double berat = double.tryParse(_beratController.text) ?? 0.0;
+
+      if (berat <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Berat harus lebih besar dari 0')),
+        );
+        return;
+      }
+
       int hargaPerKg = _jenisSampahList.firstWhere((element) =>
           element[DatabaseHelper.columnIdJenisSampah] ==
           _selectedJenisSampah)[DatabaseHelper.columnHargaJenisSampah];
-      int totalHarga = hargaPerKg * berat;
+      int totalHarga = (hargaPerKg * berat)
+          .toInt(); // Menggunakan .toInt() untuk memastikan totalHarga bertipe integer
 
       Map<String, dynamic> transaksiData = {
         DatabaseHelper.columnIdAnggota: _selectedAnggota,
