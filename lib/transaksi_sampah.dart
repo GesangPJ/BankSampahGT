@@ -9,10 +9,11 @@ class TambahTransaksi extends StatefulWidget {
 }
 
 class _TambahTransaksiState extends State<TambahTransaksi> {
-  int _selectedAnggota = 1; // Default ID anggota
+  int? _selectedAnggota;
+  int? _selectedJenisSampah;
+  final TextEditingController _beratController = TextEditingController();
   List<Map<String, dynamic>> _anggotaList = [];
   List<Map<String, dynamic>> _jenisSampahList = [];
-  List<TextEditingController> _controllers = [];
   int _totalHarga = 0;
 
   @override
@@ -24,10 +25,7 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
 
   @override
   void dispose() {
-    // Clean up controllers
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
+    _beratController.dispose();
     super.dispose();
   }
 
@@ -47,59 +45,58 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
         await DatabaseHelper.instance.getAllJenisSampah();
     setState(() {
       _jenisSampahList = jenisSampah;
-      _controllers = List.generate(
-          _jenisSampahList.length, (index) => TextEditingController());
+      if (_jenisSampahList.isNotEmpty) {
+        _selectedJenisSampah = _jenisSampahList[0]['id_jenis_sampah'];
+      }
     });
   }
 
   void _addTransaksi() async {
+    if (_selectedAnggota == null ||
+        _selectedJenisSampah == null ||
+        _beratController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Semua bidang harus diisi')),
+      );
+      return;
+    }
+
     try {
-      // Save transaction to 'transaksi' table
       DateTime now = DateTime.now();
       String tanggalTransaksi =
           '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}';
 
-      // Step 1: Insert into 'transaksi' table
       int idTransaksi = await DatabaseHelper.instance.insertTransaksi({
         DatabaseHelper.columnIdAnggota: _selectedAnggota,
         DatabaseHelper.columnTanggalTransaksi: tanggalTransaksi,
+        DatabaseHelper.columnTanggalUpdate:
+            tanggalTransaksi, // Ensure this field is filled
       });
 
-      // Step 2: Insert detail transaksi into 'detail_transaksi' table
-      for (int i = 0; i < _jenisSampahList.length; i++) {
-        int berat = int.tryParse(_controllers[i].text) ?? 0;
-        int totalHarga =
-            _jenisSampahList[i][DatabaseHelper.columnHargaJenisSampah] * berat;
+      int berat = int.tryParse(_beratController.text) ?? 0;
+      int hargaPerKg = _jenisSampahList.firstWhere((element) =>
+          element[DatabaseHelper.columnIdJenisSampah] ==
+          _selectedJenisSampah)[DatabaseHelper.columnHargaJenisSampah];
+      int totalHarga = hargaPerKg * berat;
 
-        // Prepare data for detail transaksi
-        Map<String, dynamic> detailTransaksi = {
-          DatabaseHelper.columnIdTransaksiDetail: idTransaksi,
-          DatabaseHelper.columnIdJenisSampahDetail: _jenisSampahList[i]
-              [DatabaseHelper.columnIdJenisSampah],
-          DatabaseHelper.columnBerat: berat,
-          DatabaseHelper.columnTotalHarga: totalHarga,
-        };
+      Map<String, dynamic> detailTransaksi = {
+        DatabaseHelper.columnIdTransaksiDetail: idTransaksi,
+        DatabaseHelper.columnIdJenisSampahDetail: _selectedJenisSampah,
+        DatabaseHelper.columnBerat: berat,
+        DatabaseHelper.columnTotalHarga: totalHarga,
+      };
 
-        // Insert detail transaksi into database
-        await DatabaseHelper.instance.insertDetailTransaksi(detailTransaksi);
+      await DatabaseHelper.instance.insertDetailTransaksi(detailTransaksi);
 
-        _totalHarga += totalHarga;
-      }
-
-      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Transaksi berhasil disimpan')),
       );
 
-      // Clear input values after successful save
       setState(() {
-        for (var controller in _controllers) {
-          controller.clear();
-        }
+        _beratController.clear();
         _totalHarga = 0;
       });
     } catch (e) {
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal menyimpan transaksi: $e')),
       );
@@ -135,27 +132,31 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
               ),
             ),
             const SizedBox(height: 20),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: _jenisSampahList.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        'Jenis Sampah: ${_jenisSampahList[index][DatabaseHelper.columnNamaJenisSampah]}'),
-                    TextField(
-                      controller: _controllers[index],
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Berat (Kg)',
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                  ],
+            DropdownButtonFormField<int>(
+              value: _selectedJenisSampah,
+              items: _jenisSampahList.map<DropdownMenuItem<int>>((jenisSampah) {
+                return DropdownMenuItem<int>(
+                  value: jenisSampah[DatabaseHelper.columnIdJenisSampah],
+                  child:
+                      Text(jenisSampah[DatabaseHelper.columnNamaJenisSampah]),
                 );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedJenisSampah = value!;
+                });
               },
+              decoration: const InputDecoration(
+                labelText: 'Pilih Jenis Sampah',
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _beratController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Berat (Kg)',
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
