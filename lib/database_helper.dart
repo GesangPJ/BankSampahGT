@@ -176,20 +176,22 @@ class DatabaseHelper {
   }
 
   // Fungsi untuk mendapatkan data transaksi per anggota
-  Future<List<Map<String, dynamic>>> getDataTransaksi() async {
+  Future<List<Map<String, dynamic>>> getDataTransaksi(int idAnggota) async {
     Database db = await instance.database;
 
     String query = '''
-      SELECT
-        a.$columnNama as nama,
-        SUM(dt.$columnBerat) as total_berat,
-        SUM(dt.$columnTotalHarga) as total_harga
-      FROM $tableTransaksi t
-      JOIN $tableAnggota a ON t.$columnIdAnggota = a.$columnId
-      JOIN $tableDetailTransaksi dt ON t.$columnIdTransaksi = dt.$columnIdTransaksiDetail
-      GROUP BY a.$columnNama
-    ''';
+    SELECT
+      t.$columnTanggalTransaksi,
+      a.$columnNama as nama_anggota,
+      dt.$columnBerat,
+      dt.$columnTotalHarga
+    FROM $tableTransaksi t
+    JOIN $tableAnggota a ON t.$columnIdAnggota = a.$columnId
+    JOIN $tableDetailTransaksi dt ON t.$columnIdTransaksi = dt.$columnIdTransaksiDetail
+    WHERE t.$columnIdAnggota = ?
+    ORDER BY t.$columnTanggalTransaksi DESC
+  ''';
 
-    return await db.rawQuery(query);
+    return await db.rawQuery(query, [idAnggota]);
   }
 }
