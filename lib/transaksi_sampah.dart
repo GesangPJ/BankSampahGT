@@ -1,5 +1,6 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unused_local_variable
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 
@@ -75,15 +76,21 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
           _selectedJenisSampah)[DatabaseHelper.columnHargaJenisSampah];
       int totalHarga = hargaPerKg * berat;
 
-      // ignore: unused_local_variable
-      int idTransaksi = await DatabaseHelper.instance.insertTransaksi({
+      Map<String, dynamic> transaksiData = {
         DatabaseHelper.columnIdAnggota: _selectedAnggota,
         DatabaseHelper.columnIdJenisSampahTransaksi: _selectedJenisSampah,
         DatabaseHelper.columnTanggalTransaksi: tanggalTransaksi,
         DatabaseHelper.columnTanggalUpdate: tanggalUpdate,
         DatabaseHelper.columnBerat: berat,
         DatabaseHelper.columnTotalHarga: totalHarga,
-      });
+      };
+
+      if (kDebugMode) {
+        print("Adding transaction with data: $transaksiData");
+      }
+
+      int idTransaksi =
+          await DatabaseHelper.instance.insertTransaksi(transaksiData);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Transaksi berhasil disimpan')),
