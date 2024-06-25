@@ -4,15 +4,13 @@ import 'package:bank_sampah_gt/daftar_anggota.dart';
 import 'package:bank_sampah_gt/jenis_sampah.dart';
 import 'package:bank_sampah_gt/transaksi_sampah.dart';
 import 'package:bank_sampah_gt/database_helper.dart';
-//import 'package:bank_sampah_gt/tambah_jenis_sampah.dart';
 
 void main() {
   runApp(const BankSampahGT());
 }
 
 class BankSampahGT extends StatelessWidget {
-  // ignore: use_key_in_widget_constructors
-  const BankSampahGT({Key? key});
+  const BankSampahGT({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +124,7 @@ class _DashboardPageState extends State<DashboardPage> {
           const Padding(
             padding: EdgeInsets.all(20.0),
             child: Text(
-              'Detail Semua Transaksi:',
+              'Transaksi Terbaru:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
@@ -149,6 +147,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       columns: const [
                         DataColumn(label: Text('Tanggal/Jam')),
                         DataColumn(label: Text('Nama')),
+                        DataColumn(label: Text('Jenis Sampah')),
                         DataColumn(label: Text('Berat')),
                         DataColumn(label: Text('Total Harga')),
                       ],
@@ -156,7 +155,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         return DataRow(cells: [
                           DataCell(Text(transaksi['tanggal_transaksi'])),
                           DataCell(Text(transaksi['nama_anggota'])),
-                          DataCell(Text(transaksi['berat'].toString())),
+                          DataCell(Text(transaksi['jenis_sampah'])),
+                          DataCell(Text('${transaksi['berat']} kg')),
                           DataCell(Text('Rp ${transaksi['total_harga']}')),
                         ]);
                       }).toList(),
