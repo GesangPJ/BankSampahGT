@@ -12,6 +12,7 @@ class TambahTransaksi extends StatefulWidget {
 }
 
 class _TambahTransaksiState extends State<TambahTransaksi> {
+  // Inisialisasi
   int? _selectedAnggota;
   int? _selectedJenisSampah;
   final TextEditingController _beratController = TextEditingController();
@@ -33,6 +34,7 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
     super.dispose();
   }
 
+  // Ambil Data Anggota
   Future<void> _fetchAnggota() async {
     List<Map<String, dynamic>> anggota =
         await DatabaseHelper.instance.getAllAnggota();
@@ -44,6 +46,7 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
     });
   }
 
+  //Ambil data jenis sampah
   Future<void> _fetchJenisSampah() async {
     List<Map<String, dynamic>> jenisSampah =
         await DatabaseHelper.instance.getAllJenisSampah();
@@ -55,6 +58,7 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
     });
   }
 
+  // Fungsi Tambah / Membuat transaksi
   void _addTransaksi() async {
     if (_selectedAnggota == null ||
         _selectedJenisSampah == null ||
@@ -65,6 +69,7 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
       return;
     }
 
+    // Membuat format tanggal jam
     try {
       DateTime now = DateTime.now();
       String tanggalTransaksi = now.toIso8601String();
@@ -72,19 +77,21 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
 
       double berat = double.tryParse(_beratController.text) ?? 0.0;
 
-      if (berat <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Berat harus lebih besar dari 0')),
-        );
-        return;
-      }
+      // if (berat <= 0) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(content: Text('')),
+      //   );
+      //   return;
+      // }
 
+      // Perhitungan total harga (berat x harga jenis sampah)
       int hargaPerKg = _jenisSampahList.firstWhere((element) =>
           element[DatabaseHelper.columnIdJenisSampah] ==
           _selectedJenisSampah)[DatabaseHelper.columnHargaJenisSampah];
       int totalHarga = (hargaPerKg * berat)
           .toInt(); // Menggunakan .toInt() untuk memastikan totalHarga bertipe integer
 
+      // Mapping data yang akan dikirim
       Map<String, dynamic> transaksiData = {
         DatabaseHelper.columnIdAnggota: _selectedAnggota,
         DatabaseHelper.columnIdJenisSampahTransaksi: _selectedJenisSampah,
@@ -94,10 +101,12 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
         DatabaseHelper.columnTotalHarga: totalHarga,
       };
 
+      // Debug Log
       if (kDebugMode) {
         print("Adding transaction with data: $transaksiData");
       }
 
+      // Kirim data ke database helper untuk disimpan ke database
       int idTransaksi =
           await DatabaseHelper.instance.insertTransaksi(transaksiData);
 
