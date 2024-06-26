@@ -72,16 +72,16 @@ class DatabaseHelper {
 
     await db.execute('''
     CREATE TABLE $tableTransaksi (
-  $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
-  $columnIdAnggota INTEGER NOT NULL,
-  $columnIdJenisSampahTransaksi INTEGER NOT NULL,
-  $columnTanggalTransaksi TEXT NOT NULL,
-  $columnTanggalUpdate TEXT,
-  $columnBerat REAL NOT NULL,
-  $columnTotalHarga INTEGER NOT NULL,
-  FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId),
-  FOREIGN KEY ($columnIdJenisSampahTransaksi) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
-)
+      $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
+      $columnIdAnggota INTEGER NOT NULL,
+      $columnIdJenisSampahTransaksi INTEGER NOT NULL,
+      $columnTanggalTransaksi TEXT NOT NULL,
+      $columnTanggalUpdate TEXT,
+      $columnBerat REAL NOT NULL,
+      $columnTotalHarga INTEGER NOT NULL,
+      FOREIGN KEY ($columnIdAnggota) REFERENCES $tableAnggota ($columnId),
+      FOREIGN KEY ($columnIdJenisSampahTransaksi) REFERENCES $tableJenisSampah ($columnIdJenisSampah)
+    )
   ''');
   }
 
@@ -95,7 +95,7 @@ class DatabaseHelper {
         $columnIdTransaksi INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnIdAnggota INTEGER NOT NULL,
         $columnIdJenisSampah INTEGER NOT NULL,
-        $columnBerat INTEGER NOT NULL,
+        $columnBerat REAL NOT NULL,
         $columnTotalHarga INTEGER NOT NULL,
         $columnTanggalTransaksi TEXT NOT NULL,
         $columnTanggalUpdate TEXT NOT NULL,
@@ -193,17 +193,18 @@ class DatabaseHelper {
     Database db = await instance.database;
 
     String query = '''
-SELECT
-  strftime('%Y-%m-%d %H:%M:%S', t.$columnTanggalTransaksi) AS tanggal_transaksi,
-  a.$columnNama AS nama_anggota,
-  js.$columnNamaJenisSampah AS jenis_sampah,
-  t.$columnBerat,
-  t.$columnTotalHarga
-FROM $tableTransaksi t
-JOIN $tableAnggota a ON t.$columnIdAnggota = a.$columnId
-JOIN $tableJenisSampah js ON t.$columnIdJenisSampahTransaksi = js.$columnIdJenisSampah
-ORDER BY t.$columnTanggalTransaksi DESC
-''';
+    SELECT
+      t.$columnIdTransaksi,
+      strftime('%Y-%m-%d %H:%M:%S', t.$columnTanggalTransaksi) AS tanggal_transaksi,
+      a.$columnNama AS nama_anggota,
+      js.$columnNamaJenisSampah AS jenis_sampah,
+      t.$columnBerat,
+      t.$columnTotalHarga
+    FROM $tableTransaksi t
+    JOIN $tableAnggota a ON t.$columnIdAnggota = a.$columnId
+    JOIN $tableJenisSampah js ON t.$columnIdJenisSampahTransaksi = js.$columnIdJenisSampah
+    ORDER BY t.$columnTanggalTransaksi DESC
+  ''';
 
     // Debug Log
     if (kDebugMode) {
@@ -234,7 +235,16 @@ ORDER BY t.$columnTanggalTransaksi DESC
     List<Map<String, dynamic>> result = await db.rawQuery(query, [idTransaksi]);
 
     if (result.isNotEmpty) {
-      return result.first[columnHargaJenisSampah] as int;
+      // Retrieve harga per kilogram as a num type (int or double)
+      var hargaPerKg = result.first[columnHargaJenisSampah];
+      if (hargaPerKg is int) {
+        return hargaPerKg;
+      } else if (hargaPerKg is double) {
+        return hargaPerKg.toInt(); // Convert double to int if needed
+      } else {
+        throw Exception(
+            'Unexpected data type for harga per kilogram: ${hargaPerKg.runtimeType}');
+      }
     } else {
       throw Exception(
           'Harga per kilogram tidak ditemukan untuk transaksi ID $idTransaksi');
