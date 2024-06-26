@@ -1,6 +1,7 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_literals_to_create_immutables, use_super_parameters, avoid_print
 
 import 'package:bank_sampah_gt/tambah_anggota.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bank_sampah_gt/daftar_anggota.dart';
 import 'package:bank_sampah_gt/jenis_sampah.dart';
@@ -27,7 +28,6 @@ class BankSampahGT extends StatelessWidget {
 }
 
 class DashboardPage extends StatefulWidget {
-  // ignore: use_super_parameters
   const DashboardPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
@@ -143,6 +143,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     const DataColumn(label: Text('Jenis Sampah')),
                     const DataColumn(label: Text('Berat')),
                     const DataColumn(label: Text('Total Harga')),
+                    const DataColumn(label: Text('Aksi')),
                   ],
                   rows: snapshot.data!.map((transaksi) {
                     return DataRow(cells: [
@@ -151,6 +152,14 @@ class _DashboardPageState extends State<DashboardPage> {
                       DataCell(Text(transaksi['jenis_sampah'].toString())),
                       DataCell(Text('${transaksi['berat']} kg')),
                       DataCell(Text('Rp ${transaksi['total_harga']}')),
+                      DataCell(
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            _showEditDialog(context, transaksi);
+                          },
+                        ),
+                      ),
                     ]);
                   }).toList(),
                 );
@@ -160,5 +169,84 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       ),
     );
+  }
+
+  void _showEditDialog(BuildContext context, Map<String, dynamic> transaksi) {
+    TextEditingController beratController = TextEditingController(
+      text: transaksi['berat'].toString(),
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Transaksi'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: beratController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Berat (Kg)'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                print('Simpan button pressed');
+                _updateTransaksi(
+                    transaksi['id_transaksi'], beratController.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Simpan'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _updateTransaksi(int id, String berat) async {
+    try {
+      print('UpdateTransaksi dipanggil dengan ID: $id dan berat: $berat');
+      int newBerat = int.tryParse(berat) ?? 0;
+      if (newBerat <= 0) {
+        throw Exception('Berat harus lebih besar dari 0.');
+      }
+
+      // Dapatkan harga per kilogram dari jenis sampah yang sesuai
+      int hargaPerKg =
+          await DatabaseHelper.instance.getHargaPerKgByTransaksiId(id);
+      int totalHarga = newBerat * hargaPerKg;
+
+      Map<String, dynamic> updatedData = {
+        DatabaseHelper.columnBerat: newBerat,
+        DatabaseHelper.columnTotalHarga: totalHarga,
+        DatabaseHelper.columnTanggalUpdate: DateTime.now().toIso8601String(),
+      };
+
+      int result =
+          await DatabaseHelper.instance.updateTransaksi(id, updatedData);
+
+      if (result > 0) {
+        // Jika update berhasil, cetak pesan log
+        print('Update transaksi berhasil.');
+      } else {
+        // Jika update gagal, cetak pesan log
+        print('Update transaksi gagal.');
+      }
+
+      // Memperbarui UI
+      setState(() {});
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 }
