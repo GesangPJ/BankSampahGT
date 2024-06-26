@@ -77,12 +77,12 @@ class _TambahTransaksiState extends State<TambahTransaksi> {
 
       double berat = double.tryParse(_beratController.text) ?? 0.0;
 
-      // if (berat <= 0) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     const SnackBar(content: Text('')),
-      //   );
-      //   return;
-      // }
+      if (berat <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Berat tidak boleh dibawah 1')),
+        );
+        return;
+      }
 
       // Perhitungan total harga (berat x harga jenis sampah)
       int hargaPerKg = _jenisSampahList.firstWhere((element) =>
