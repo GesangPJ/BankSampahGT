@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -175,16 +177,15 @@ class DatabaseHelper {
     return await db.insert(tableTransaksi, row);
   }
 
-  // Fungsi untuk update transaksi
+  // Fungsi Update transaksi
   Future<int> updateTransaksi(int id, Map<String, dynamic> row) async {
-    if (row[columnBerat] <= 0) {
-      throw Exception('Berat harus lebih besar dari 0.');
-    }
-
     Database db = await instance.database;
     row[columnTanggalUpdate] = DateTime.now().toIso8601String();
-    return await db.update(tableTransaksi, row,
+    print('Updating transaction with ID: $id, Data: $row');
+    int result = await db.update(tableTransaksi, row,
         where: '$columnIdTransaksi = ?', whereArgs: [id]);
+    print('Update result: $result');
+    return result;
   }
 
   // Fungsi untuk mendapatkan semua data transaksi
@@ -217,5 +218,26 @@ ORDER BY t.$columnTanggalTransaksi DESC
     }
 
     return result;
+  }
+
+  // Ambil data transaksi untuk update / edit
+  Future<int> getHargaPerKgByTransaksiId(int idTransaksi) async {
+    Database db = await instance.database;
+
+    String query = '''
+    SELECT js.$columnHargaJenisSampah
+    FROM $tableTransaksi t
+    JOIN $tableJenisSampah js ON t.$columnIdJenisSampahTransaksi = js.$columnIdJenisSampah
+    WHERE t.$columnIdTransaksi = ?
+  ''';
+
+    List<Map<String, dynamic>> result = await db.rawQuery(query, [idTransaksi]);
+
+    if (result.isNotEmpty) {
+      return result.first[columnHargaJenisSampah] as int;
+    } else {
+      throw Exception(
+          'Harga per kilogram tidak ditemukan untuk transaksi ID $idTransaksi');
+    }
   }
 }
