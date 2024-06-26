@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, use_super_parameters, avoid_print
 
 import 'package:bank_sampah_gt/tambah_anggota.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bank_sampah_gt/daftar_anggota.dart';
 import 'package:bank_sampah_gt/jenis_sampah.dart';
