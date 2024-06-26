@@ -49,6 +49,7 @@ class DatabaseHelper {
     );
   }
 
+  // Fungsi membuat table
   void _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE $tableAnggota (
@@ -174,6 +175,7 @@ class DatabaseHelper {
     return await db.insert(tableTransaksi, row);
   }
 
+  // Fungsi untuk update transaksi
   Future<int> updateTransaksi(int id, Map<String, dynamic> row) async {
     if (row[columnBerat] <= 0) {
       throw Exception('Berat harus lebih besar dari 0.');
@@ -202,10 +204,12 @@ JOIN $tableJenisSampah js ON t.$columnIdJenisSampahTransaksi = js.$columnIdJenis
 ORDER BY t.$columnTanggalTransaksi DESC
 ''';
 
+    // Debug Log
     if (kDebugMode) {
       print("Executing query: $query");
     }
 
+    // Raw query untuk debug
     List<Map<String, dynamic>> result = await db.rawQuery(query);
 
     if (kDebugMode) {
