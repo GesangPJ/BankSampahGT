@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, use_super_parameters, avoid_print
+// ignore_for_file: prefer_const_literals_to_create_immutables, use_super_parameters, avoid_print, use_build_context_synchronously
 
 import 'package:bank_sampah_gt/tambah_anggota.dart';
 import 'package:flutter/material.dart';
@@ -175,6 +175,8 @@ class _DashboardPageState extends State<DashboardPage> {
       text: transaksi['berat'].toString(),
     );
 
+    int idTransaksi = transaksi['id_transaksi'] ?? 0; // Default value if null
+
     showDialog(
       context: context,
       builder: (context) {
@@ -201,8 +203,9 @@ class _DashboardPageState extends State<DashboardPage> {
               onPressed: () {
                 print('Simpan button pressed');
                 _updateTransaksi(
-                    transaksi['id_transaksi'], beratController.text);
-                Navigator.of(context).pop();
+                  idTransaksi,
+                  beratController.text,
+                );
               },
               child: const Text('Simpan'),
             ),
@@ -215,7 +218,7 @@ class _DashboardPageState extends State<DashboardPage> {
   void _updateTransaksi(int id, String berat) async {
     try {
       print('UpdateTransaksi dipanggil dengan ID: $id dan berat: $berat');
-      int newBerat = int.tryParse(berat) ?? 0;
+      double newBerat = double.tryParse(berat) ?? 0;
       if (newBerat <= 0) {
         throw Exception('Berat harus lebih besar dari 0.');
       }
@@ -223,7 +226,13 @@ class _DashboardPageState extends State<DashboardPage> {
       // Dapatkan harga per kilogram dari jenis sampah yang sesuai
       int hargaPerKg =
           await DatabaseHelper.instance.getHargaPerKgByTransaksiId(id);
-      int totalHarga = newBerat * hargaPerKg;
+      // ignore: unnecessary_null_comparison
+      if (hargaPerKg == null) {
+        throw Exception(
+            'Harga per kilogram tidak ditemukan untuk transaksi ID $id');
+      }
+
+      int totalHarga = (newBerat * hargaPerKg).toInt();
 
       Map<String, dynamic> updatedData = {
         DatabaseHelper.columnBerat: newBerat,
@@ -231,19 +240,22 @@ class _DashboardPageState extends State<DashboardPage> {
         DatabaseHelper.columnTanggalUpdate: DateTime.now().toIso8601String(),
       };
 
+      print('Data yang akan diupdate: $updatedData');
+
       int result =
           await DatabaseHelper.instance.updateTransaksi(id, updatedData);
 
       if (result > 0) {
-        // Jika update berhasil, cetak pesan log
         print('Update transaksi berhasil.');
       } else {
-        // Jika update gagal, cetak pesan log
         print('Update transaksi gagal.');
       }
 
       // Memperbarui UI
       setState(() {});
+
+      // Tutup dialog setelah data berhasil diperbarui
+      Navigator.of(context).pop();
     } catch (e) {
       print('Error: $e');
     }
