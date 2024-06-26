@@ -34,13 +34,14 @@ class _TambahAnggotaState extends State<TambahAnggota> {
     super.dispose();
   }
 
+  // Fungsi menyimpan data anggota
   Future<void> _saveMember() async {
     String nama = _namaController.text;
     String alamat = _alamatController.text;
     String noTelepon = _noTeleponController.text;
 
     if (nama.isNotEmpty && alamat.isNotEmpty && noTelepon.isNotEmpty) {
-      // Create a map of the data
+      // Mapping data anggota untuk dikirim
       Map<String, dynamic> row = {
         DatabaseHelper.columnNama: nama,
         DatabaseHelper.columnAlamat: alamat,
@@ -86,7 +87,7 @@ class _TambahAnggotaState extends State<TambahAnggota> {
         }
       }
     } else {
-      // Show an alert if the form is incomplete
+      // Jika input ada yang kosong
       showDialog(
         context: context,
         builder: (BuildContext context) {
