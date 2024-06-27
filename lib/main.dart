@@ -78,6 +78,13 @@ class _DashboardPageState extends State<DashboardPage> {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.insights),
+            title: const Text('Laporan'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.category),
             title: const Text('Jenis Sampah'),
             onTap: () {
@@ -142,7 +149,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     const DataColumn(label: Text('Jenis Sampah')),
                     const DataColumn(label: Text('Berat')),
                     const DataColumn(label: Text('Total Harga')),
-                    const DataColumn(label: Text('Aksi')),
+                    const DataColumn(label: Text('Edit')),
                   ],
                   rows: snapshot.data!.map((transaksi) {
                     return DataRow(cells: [
