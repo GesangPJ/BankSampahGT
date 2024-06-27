@@ -129,13 +129,14 @@ class _DaftarJenisSampahState extends State<DaftarJenisSampah> {
                                       title: Text('Edit'),
                                     ),
                                   ),
-                                  const PopupMenuItem(
-                                    value: 'delete',
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('Hapus'),
-                                    ),
-                                  ),
+                                  // Menu Hapus Jenis Sampah
+                                  // const PopupMenuItem(
+                                  //   value: 'delete',
+                                  //   child: ListTile(
+                                  //     leading: Icon(Icons.delete),
+                                  //     title: Text('Hapus'),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ],
