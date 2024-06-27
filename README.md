@@ -6,6 +6,8 @@
 
 Aplikasi pengelolaan bank sampah menggunakan Flutter.
 
+<img src="https://github.com/GesangPJ/BankSampahGT/blob/main/lib/img/Screenshot_20240627_112932.jpg" width="300" height="550" alt="dashboard">
+
 Fitur :
 
 - Tambah / Edit / Hapus Jenis Sampah.
@@ -13,11 +15,11 @@ Fitur :
 - Daftar Anggota.
 - Transaksi Bank Sampah.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+<img src="https://github.com/GesangPJ/BankSampahGT/blob/main/lib/img/Screenshot_20240627_112950.jpg" width="300" height="550" alt="add transaction">
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://github.com/GesangPJ/BankSampahGT/blob/main/lib/img/Screenshot_20240627_112959.jpg" width="300" height="550" alt="list jenis sampah">
+
+<img src="https://github.com/GesangPJ/BankSampahGT/blob/main/lib/img/Screenshot_20240627_113007.jpg" width="300" height="550" alt="list members">
+
+<img src="https://github.com/GesangPJ/BankSampahGT/blob/main/lib/img/Screenshot_20240627_113013.jpg" width="300" height="550" alt="add member">
