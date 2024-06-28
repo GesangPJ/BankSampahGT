@@ -15,6 +15,17 @@ Fitur :
 - Daftar Anggota.
 - Transaksi Bank Sampah.
 
+## Release
+
+### v1.0.0
+
+First Release :
+
+- Halaman Dashboard dengan isi tabel semua transaksi
+- Halaman Tambah Transaksi
+- Halaman Daftar Jenis Sampah dan Tambah Jenis Sampah
+- Halaman Daftar Anggota
+- Halaman Tambah Anggota
 
 <img src="https://github.com/GesangPJ/BankSampahGT/blob/main/lib/img/Screenshot_20240627_112950.jpg" width="300" height="550" alt="add transaction">
 
