@@ -225,6 +225,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  // ignore: unused_element
   void _showEditDialog(BuildContext context, Map<String, dynamic> transaksi) {
     TextEditingController beratController = TextEditingController(
       text: transaksi['berat'].toString(),
@@ -275,11 +276,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
       int hargaPerKg =
           await DatabaseHelper.instance.getHargaPerKgByTransaksiId(id);
-
-      if (hargaPerKg == null) {
-        throw Exception(
-            'Harga per kilogram tidak ditemukan untuk transaksi ID $id');
-      }
 
       int totalHarga = (newBerat * hargaPerKg).toInt();
 
@@ -406,11 +402,6 @@ class TransaksiDataSource extends DataTableSource {
 
       int hargaPerKg =
           await DatabaseHelper.instance.getHargaPerKgByTransaksiId(id);
-
-      if (hargaPerKg == null) {
-        throw Exception(
-            'Harga per kilogram tidak ditemukan untuk transaksi ID $id');
-      }
 
       int totalHarga = (newBerat * hargaPerKg).toInt();
 
